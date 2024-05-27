@@ -3,12 +3,13 @@ package com.eazybytes.eazyschool.service;
 import com.eazybytes.eazyschool.model.Contact;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.annotation.ApplicationScope;
 import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.context.annotation.SessionScope;
 
 @Slf4j
 @Service
-@SessionScope
+@ApplicationScope
 public class ContactService {
 
     private int counter = 0;
