@@ -17,7 +17,13 @@ public class ProjectSecurityConfig {
         //permit all Request inside the Web Application
         http
             .authorizeHttpRequests((requests) -> requests
-                    .anyRequest().authenticated()
+                    .requestMatchers("/home", "/", "").permitAll()
+                    .requestMatchers("/holidays/**").permitAll()
+                    .requestMatchers("/contact").permitAll()
+                    .requestMatchers("/saveMsg").permitAll()
+                    .requestMatchers("/courses").permitAll()
+                    .requestMatchers("/about").authenticated()
+                    .requestMatchers("/assets/**").permitAll()
             )
             .formLogin(withDefaults())
             .httpBasic(withDefaults());
