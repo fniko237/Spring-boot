@@ -2,6 +2,7 @@ package com.eazybytes.eazyschool.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -16,35 +17,24 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class ProjectSecurityConfig {
 
     @Bean
-    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception{
-        //permit all Request inside the Web Application
-        http
-            .authorizeHttpRequests((requests) -> requests
-                    .requestMatchers("/dashboard").authenticated()
-                    .requestMatchers("/home", "/", "").permitAll()
-                    .requestMatchers("/holidays/**").permitAll()
-                    .requestMatchers("/contact").permitAll()
-                    .requestMatchers("/saveMsg").permitAll()
-                    .requestMatchers("/courses").permitAll()
-                    .requestMatchers("/about").permitAll()
-                    .requestMatchers("/assets/**").permitAll()
-                    .requestMatchers("/login").permitAll()
-            )
-            .formLogin(formLogin -> formLogin
-                    .loginPage("/login") // Specify the custom login page URL
-//                        .loginProcessingUrl("/home") // URL to submit the username and password to
-                    .defaultSuccessUrl("/dashboard", true) // URL to redirect to after a successful login
-                    .failureUrl("/login?error=true") // URL to redirect to after a failed login
-                    .permitAll() // Allow all users to see the login page
-            )
-            .logout(logout -> logout
-                    .logoutUrl("/logout") // URL to trigger logout
-                    .invalidateHttpSession(true) //Invalidate Http Session
-                    .deleteCookies("JSESSIONID") // Invalidate session cookies
-                    .logoutSuccessUrl("/login?logout=true") // URL to redirect to after successful logout
-                    .permitAll()
-            )
-            .httpBasic(withDefaults());
+    SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+
+        http.csrf((csrf) -> csrf.disable())
+                .authorizeHttpRequests((requests) -> requests.requestMatchers("/dashboard").authenticated()
+                        .requestMatchers("", "/", "/home").permitAll()
+                        .requestMatchers("/holidays/**").permitAll()
+                        .requestMatchers("/contact").permitAll()
+                        .requestMatchers("/saveMsg").permitAll()
+                        .requestMatchers("/courses").permitAll()
+                        .requestMatchers("/about").permitAll()
+                        .requestMatchers("/login").permitAll()
+                        .requestMatchers("/assets/**").permitAll())
+                .formLogin(loginConfigurer -> loginConfigurer.loginPage("/login")
+                        .defaultSuccessUrl("/dashboard").failureUrl("/login?error=true").permitAll())
+                .logout(logoutConfigurer -> logoutConfigurer.logoutSuccessUrl("/login?logout=true")
+                        .invalidateHttpSession(true).permitAll())
+                .httpBasic(Customizer.withDefaults());
+
         return http.build();
     }
 
